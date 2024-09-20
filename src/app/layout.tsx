@@ -7,7 +7,7 @@ import { Header } from "@/components/custom/Header";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "MercuryShop",
+  title: "TuMejorPrecio",
   description: "nNueva tienda",
 };
 

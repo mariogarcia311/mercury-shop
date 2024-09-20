@@ -14,11 +14,12 @@ export const productsExitoAdapter = (products: any = []): Product[] => {
         name,
         image: image?.[0],
         price: {
-          lowPrice: formatter.format(offers?.lowPrice),
-          price: formatter.format(offers?.offers[0].listPrice),
+          lowPrice: offers?.lowPrice,
+          price: offers?.offers[0].listPrice,
         },
         brand: _product.node.brand.brandName,
         slug,
+        store: "exito.png",
       };
     }
   );

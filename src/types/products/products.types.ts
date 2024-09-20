@@ -4,6 +4,7 @@ export interface Product {
   price: Price;
   slug: string;
   brand: string;
+  store: string;
 }
 
 export interface Image {
@@ -12,6 +13,6 @@ export interface Image {
 }
 
 export interface Price {
-  lowPrice: string;
-  price: string;
+  lowPrice: number;
+  price: number;
 }

@@ -14,8 +14,8 @@ export const Footer = (props: Props) => {
               Acerca de nosotros
             </h3>
             <p className="text-muted-foreground">
-              MercuryShop es tu destino para encontrar los mejores productos al
-              mejor precio.
+              TuMejorPrecio es tu destino para encontrar los mejores productos
+              al mejor precio.
             </p>
           </div>
           <div>
@@ -76,7 +76,7 @@ export const Footer = (props: Props) => {
           </div>
         </div>
         <div className="mt-8 text-center text-muted-foreground">
-          <p>&copy; 2023 MercuryShop. Todos los derechos reservados.</p>
+          <p>&copy; 2023 TuMejorPrecio. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>

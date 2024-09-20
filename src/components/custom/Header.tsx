@@ -29,7 +29,9 @@ export const Header = (props: Props) => {
     <header className="sticky top-0 z-50 w-full border-b backdrop-blur supports-[backdrop-filter]:bg-background-secondary/90">
       <div className="container flex items-center justify-between h-16 px-4">
         <Link href="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-bold text-secondary">MercuryShop</span>
+          <span className="text-2xl font-bold text-secondary">
+            TuMejorPrecio
+          </span>
         </Link>
         <div className="hidden md:flex md:flex-1 md:items-center md:justify-center">
           <Input

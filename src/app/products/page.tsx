@@ -2,8 +2,7 @@
 import { getProductsByName } from "@/actions/products/getProductsByName";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Search, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,22 +22,23 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { productsExitoAdapter } from "@/adapters/productsExitoAdapter";
 import { Product } from "@/types/products/products.types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductSkeleton } from "@/components/custom/Product/ProductSkeleton";
+import { NumberToCurrency } from "@/actions/utils/products/currencyToNumber";
 
 const Page = () => {
   const params = useSearchParams();
   const [products, setProducts] = useState<Product[] | null>();
-  console.log(params.get("search"));
+
   useEffect(() => {
     setProducts(null);
     const getServer = async () => {
       let _resp;
       const _param = params.get("search");
       _param && (_resp = await getProductsByName(_param));
-      setProducts(productsExitoAdapter(JSON.parse(_resp || "")));
+      setProducts(JSON.parse(_resp || "").resp);
+
       // setProducts(
       //   productsExitoAdapter(
       //     JSON.parse(window.localStorage.getItem("products") || "")
@@ -122,12 +122,18 @@ const Page = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {products
-              ? products.map((_product) => (
+              ? products?.map((_product) => (
                   <Card
                     key={_product.slug}
                     className="bg-background border-primary/20"
                   >
-                    <CardContent className="p-4">
+                    <CardContent className="p-4 relative">
+                      <div className=" absolute top-1 right-2 h-8 w-14">
+                        <img
+                          src={`images/stores/${_product.store}`}
+                          alt={_product.store}
+                        />
+                      </div>
                       <div className="w-full flex justify-center">
                         <img
                           src={_product.image.url}
@@ -136,7 +142,10 @@ const Page = () => {
                         />
                       </div>
 
-                      <h3 className="text-lg font-semibold mb-2 text-primary truncated-text">
+                      <h3
+                        className="text-lg font-semibold mb-2 text-primary truncated-text"
+                        title={_product.name}
+                      >
                         {_product.name}
                       </h3>
                       <p className="text-muted-foreground mb-4">
@@ -144,7 +153,9 @@ const Page = () => {
                       </p>
                       <div className="flex justify-between items-center">
                         <span className="text-xl font-bold text-secondary ">
-                          {_product.price.lowPrice}
+                          {_product.price.lowPrice
+                            ? NumberToCurrency(_product.price.lowPrice)
+                            : NumberToCurrency(_product.price.price)}
                         </span>
                         <Button
                           size="sm"

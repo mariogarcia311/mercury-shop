@@ -9,7 +9,7 @@ export default function Component() {
         <section className="py-12 bg-secondary/5">
           <div className="container px-4">
             <h1 className="text-4xl font-bold mb-8 text-center text-primary">
-              Bienvenido a MercuryShop
+              Bienvenido a TuMejorPrecio
             </h1>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="bg-background border-primary">
