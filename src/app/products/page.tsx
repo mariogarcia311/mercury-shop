@@ -1,7 +1,7 @@
 "use client";
 import { getProductsByName } from "@/actions/products/getProductsByName";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,25 +28,46 @@ import { ProductSkeleton } from "@/components/custom/Product/ProductSkeleton";
 import { NumberToCurrency } from "@/actions/utils/products/currencyToNumber";
 
 const Page = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const params = useSearchParams();
   const [products, setProducts] = useState<Product[] | null>();
+  const [pageNumber, setpageNumber] = useState<number>(0);
 
   useEffect(() => {
     setProducts(null);
     const getServer = async () => {
       let _resp;
-      const _param = params.get("search");
-      _param && (_resp = await getProductsByName(_param));
+      const productName = params.get("search");
+      const _pageNumber = params.get("page");
+      _pageNumber && setpageNumber(Number(_pageNumber));
+      _pageNumber &&
+        productName &&
+        (_resp = await getProductsByName({
+          productName,
+          pageNumber: _pageNumber,
+        }));
       setProducts(JSON.parse(_resp || "").resp);
-
-      // setProducts(
-      //   productsExitoAdapter(
-      //     JSON.parse(window.localStorage.getItem("products") || "")
-      //   )
-      // );
     };
     getServer();
   }, [params]);
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const _params = new URLSearchParams(params.toString());
+      _params.set(name, value);
+      return _params.toString();
+    },
+    [params]
+  );
+
+  const updateParams = (name: string, value: string) => {
+    router.push(pathname + "?" + createQueryString(name, value));
+  };
+
+  const newParams = (name: string, value: string) => {
+    return pathname + "?" + createQueryString(name, value);
+  };
 
   useEffect(() => {
     console.log(products);
@@ -175,15 +196,18 @@ const Page = () => {
           <Pagination className="mt-8">
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious href="#" />
+                <PaginationPrevious
+                  href={newParams(
+                    "page",
+                    (pageNumber > 0 ? pageNumber - 1 : 0).toString()
+                  )}
+                />
               </PaginationItem>
               <PaginationItem>
                 <PaginationLink href="#">1</PaginationLink>
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink href="#" isActive>
-                  2
-                </PaginationLink>
+                <PaginationLink href="#">2</PaginationLink>
               </PaginationItem>
               <PaginationItem>
                 <PaginationLink href="#">3</PaginationLink>
@@ -192,7 +216,9 @@ const Page = () => {
                 <PaginationEllipsis />
               </PaginationItem>
               <PaginationItem>
-                <PaginationNext href="#" />
+                <PaginationNext
+                  href={newParams("page", (pageNumber + 1).toString())}
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>

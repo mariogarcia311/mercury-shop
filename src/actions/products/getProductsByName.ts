@@ -2,13 +2,18 @@
 import { getProductsExito } from "../utils/products/getProductsExito";
 import { getProductsAlkosto } from "../utils/products/getProductsAlkosto";
 import { Product } from "../../types/products/products.types";
-export async function getProductsByName(search: string) {
+import { GetProductsByName } from "@/types/products/getProductsByName.types";
+export async function getProductsByName({
+  productName,
+  pageNumber = "0",
+  orderBy = "relevance",
+}: GetProductsByName) {
   let resp: Product[] | any;
   let browser;
   try {
     const [respExito, respAlkosto] = await Promise.all([
-      getProductsExito(search),
-      getProductsAlkosto(search),
+      getProductsExito({ productName, pageNumber, orderBy }),
+      getProductsAlkosto({ productName, pageNumber, orderBy }),
     ]);
 
     resp = [...respExito, ...respAlkosto]

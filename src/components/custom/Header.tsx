@@ -21,7 +21,7 @@ export const Header = (props: Props) => {
 
   const handleSearchSubmit = () => {
     if (searchQuery.trim()) {
-      router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
+      router.push(`/products?search=${encodeURIComponent(searchQuery)}&page=0`);
     }
   };
 

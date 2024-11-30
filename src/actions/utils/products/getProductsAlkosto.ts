@@ -2,6 +2,7 @@
 import { Product } from "@/types/products/products.types";
 import puppeteer from "puppeteer";
 import { currencyToNumber } from "./currencyToNumber";
+import { GetProductsByName } from "@/types/products/getProductsByName.types";
 const querySelectors = {
   products:
     ".ais-InfiniteHits-item.product__item.js-product-item.js-algolia-product-click",
@@ -13,7 +14,10 @@ const querySelectors = {
   image: ".product__item__information__image img",
 };
 
-export async function getProductsAlkosto(search: string): Promise<Product[]> {
+export async function getProductsAlkosto({
+  productName,
+  pageNumber,
+}: GetProductsByName): Promise<Product[]> {
   let resp;
   let browser;
   try {
@@ -27,13 +31,40 @@ export async function getProductsAlkosto(search: string): Promise<Product[]> {
     console.time("Navigation and API Response");
     console.time("page load: ");
     await page.goto(
-      `https://www.alkosto.com/search?text=${search}&page=1&sort=relevance`,
+      `https://www.alkosto.com/search?text=${productName}&page=${
+        Number(pageNumber) + 1
+      }&sort=relevance`,
       {
         waitUntil: "domcontentloaded",
       }
     );
     console.timeEnd("page load: ");
-    const _resp = await page.waitForSelector(querySelectors.products);
+    const navigationPromise = page.waitForNavigation({
+      waitUntil: "load",
+      timeout: 10000,
+    });
+
+    try {
+      await Promise.race([
+        navigationPromise.then(() => {
+          const currentUrl = page.url();
+          console.log("Current URL after navigation: ", currentUrl);
+        }),
+        page
+          .waitForSelector(querySelectors.products, {
+            timeout: 4000,
+          })
+          .then(() => {
+            console.log("Selector found");
+          })
+          .catch(),
+      ]);
+    } catch (error) {
+      await page.waitForSelector(querySelectors.products, {
+        timeout: 4000,
+      });
+    }
+
     const products: Product[] | any = await page.$$eval(
       querySelectors.products,
       (elements, querySelectors) =>
@@ -72,7 +103,7 @@ export async function getProductsAlkosto(search: string): Promise<Product[]> {
     console.timeEnd("Navigation and API Response");
     await browser.close();
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     browser && (await browser?.close());
   } finally {
     return resp ?? [];

@@ -1,7 +1,11 @@
 "use server";
 import { productsExitoAdapter } from "@/adapters/products/productsExitoAdapter";
+import { GetProductsByName } from "@/types/products/getProductsByName.types";
 import puppeteer from "puppeteer";
-export async function getProductsExito(search: string) {
+export async function getProductsExito({
+  productName,
+  pageNumber,
+}: GetProductsByName) {
   let resp;
   let browser;
   try {
@@ -15,7 +19,7 @@ export async function getProductsExito(search: string) {
     // console.time("Navigation and API Response");
     // console.time("page load: ");
     await page.goto(
-      `https://www.exito.com/s?q=${search}&sort=score_desc&page=0`,
+      `https://www.exito.com/s?q=${productName}&sort=score_desc&page=${pageNumber}`,
       {
         waitUntil: "domcontentloaded",
       }
